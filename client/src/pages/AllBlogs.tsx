@@ -25,13 +25,13 @@ export const AllBlogs = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const blogResponse = await axios.get<Blog[]>("http://localhost:3000/blog/", {
+        const blogResponse = await axios.get<Blog[]>("https://writely-backend-2fw2.onrender.com/blog/", {
           withCredentials: true,
         });
         setBlogs(blogResponse.data);
 
         const profileRes = await axios.get<{ profilePhoto: string }>(
-          "http://localhost:3000/profile/profilephoto",
+          "https://writely-backend-2fw2.onrender.com/profile/profilephoto",
           { withCredentials: true }
         );
         setDP({ file: null, imageUrl: profileRes.data.profilePhoto });
@@ -48,7 +48,7 @@ export const AllBlogs = () => {
 searchWithSymbols = encodeURIComponent(searchWithSymbols);
 
 const searchRes = await axios.get<Blog[]>(
-  `http://localhost:3000/blog/search?search=${searchWithSymbols}`,
+  `https://writely-backend-2fw2.onrender.com/blog/search?search=${searchWithSymbols}`,
   { withCredentials: true }
 );
 
