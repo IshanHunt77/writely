@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 interface Blog {
-  _id:string;
+  _id: string;
   title: string;
   blog: string;
-  author:string;
+  author: string;
   profilePhoto: string;
   imagelink: string;
   upvote: number;
@@ -36,7 +36,7 @@ export const Userblogs = () => {
         );
         setDP({ file: null, imageUrl: profileRes.data.profilePhoto });
       } catch (e) {
-        console.log("Error occurred:", e);
+        console.error("Error fetching data:", e);
       }
     };
     fetchData();
@@ -62,21 +62,21 @@ export const Userblogs = () => {
 
   return (
     <div className="min-h-screen bg-white-100">
-      <div className=" px-4 py-6">
+      <div className="px-4 py-6">
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => nav("/createblog")}
-            className="px-6 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900 mr-4"
+            className="px-6 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900"
           >
             Create Blog
           </button>
-          <div className="flex flex-1 mx-4">
+          <div className="flex flex-1 justify-center">
             <input
               type="text"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-96 p-2 border border-amber-500 rounded-md ml-80 focus:outline-none focus:ring-2 focus:ring-amber-500 mr-2"
+              className="w-96 p-2 border border-amber-500 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 mr-2"
             />
             <button
               onClick={getSearch}
@@ -87,16 +87,16 @@ export const Userblogs = () => {
           </div>
           <Navbar />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 ml-60">
-          {filteredBlogs.map((bl, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {filteredBlogs.map((bl) => (
             <BlogCard
               blogId={bl._id}
               author={bl.author}
-              key={index}
+              key={bl._id}
               title={bl.title}
               content={bl.blog}
               imagelink={bl.imagelink}
-              profilePhoto={dp.imageUrl || ""}
+              profilePhoto={dp.imageUrl || bl.profilePhoto || ""}
               upvote={bl.upvote}
             />
           ))}
