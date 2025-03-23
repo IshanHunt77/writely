@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRecoilState } from "recoil";
 import { dpatom } from "../atoms/dpatom";
@@ -15,48 +15,42 @@ export const Profile = () => {
   const [dp, setDP] = useRecoilState(dpatom);
   const [profileImagelink, setProfileImagelink] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>("Guest");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const defaultImage = "/EmptyImage.png";
 
-  // Fetch profile data on mount
-  useState(() => {
+  useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const { data } = await axios.get<ProfileResponse>(
           "https://writely-backend-2fw2.onrender.com/profile/user",
           { withCredentials: true }
         );
-        setProfileImagelink(data.userinfo?.profilePhoto || null);
-        setUsername(data.userinfo?.username || "Guest");
+        setProfileImagelink(data.userinfo.profilePhoto || null);
+        setUsername(data.userinfo.username || "Guest");
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
     };
     fetchProfileData();
-  });
+  }, []);
 
   const handleProfilePhoto = async () => {
-    if (!dp.file) {
-      console.warn("No file selected!");
-      return;
-    }
-
     try {
-      const formData = new FormData();
-      formData.append("images", dp.file);
-
-      const imgRes = await axios.post<{ imageLink: string }>(
-        "https://writely-backend-2fw2.onrender.com/profile/upload",
-        formData
-      );
-
-      const imageUrl = `https://writely-backend-2fw2.onrender.com${imgRes.data.imageLink}`;
-
+      let imageUrl = "";
+      if (dp.file) {
+        const formData = new FormData();
+        formData.append("images", dp.file);
+        const imgRes = await axios.post<{ imageLink: string }>(
+          "https://writely-backend-2fw2.onrender.com/profile/upload",
+          formData
+        );
+        imageUrl = `https://writely-backend-2fw2.onrender.com${imgRes.data.imageLink}`;
+      }
       await axios.post(
         "https://writely-backend-2fw2.onrender.com/profile/updateprofile",
         { profilePhoto: imageUrl },
         { withCredentials: true }
       );
-
       setDP({ file: null, imageUrl });
       setProfileImagelink(imageUrl);
       console.log("Profile updated successfully!");
@@ -76,6 +70,7 @@ export const Profile = () => {
         />
         <div className="flex flex-col items-center gap-4">
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             className="hidden"
@@ -90,14 +85,14 @@ export const Profile = () => {
             }}
           />
           <button
-            onClick={() => document.querySelector('input[type="file"]')?.click()}
+            onClick={() => (fileInputRef.current as HTMLInputElement)?.click()}
             className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-md transition shadow-md"
           >
             Change Image
           </button>
           <button
             onClick={handleProfilePhoto}
-            className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-md transition shadow-md"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition shadow-md"
           >
             Update Profile
           </button>
