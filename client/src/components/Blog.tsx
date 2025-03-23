@@ -44,7 +44,7 @@ export const Blog = ({ blog }: BlogProps) => {
       const fetchUserInfo = async () => {
         try {
           const res = await axios.get<Response>(
-            `http://localhost:3000/profile/${blog.author}`,
+            `https://writely-backend-2fw2.onrender.com/profile/${blog.author}`,
             { withCredentials: true }
           );
           setAuthor(res.data.userinfo.username);
@@ -61,7 +61,7 @@ export const Blog = ({ blog }: BlogProps) => {
     try {
       if (!blike) {
         await axios.post(
-          `http://localhost:3000/blog/b/${blog.blogId}`,
+          `https://writely-backend-2fw2.onrender.com/blog/b/${blog.blogId}`,
           { upvote: true },
           { withCredentials: true }
         );
@@ -77,7 +77,7 @@ export const Blog = ({ blog }: BlogProps) => {
     try {
       if (!blike) {
         await axios.post(
-          `http://localhost:3000/blog/b/${blog.blogId}`,
+          `https://writely-backend-2fw2.onrender.com/blog/b/${blog.blogId}`,
           { downvote: true },
           { withCredentials: true }
         );
