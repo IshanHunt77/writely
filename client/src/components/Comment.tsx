@@ -5,13 +5,13 @@ import { Socket } from "socket.io-client";
 
 interface CommentProps {
   socket: Socket | null;
-  blogId: string | undefined;
+  blogId?: string;
 }
 
 export const Comment = ({ socket, blogId }: CommentProps) => {
   const [comment, setComment] = useState("");
   const user = useRecoilValue(usernameatom);
-  const username = typeof user === "object" && user !== null ? user.username : user;
+  const username = typeof user === "object" && user?.username ? user.username : "Anonymous";
 
   const handleComment = () => {
     if (!comment.trim() || !blogId || !socket) return;
@@ -30,7 +30,8 @@ export const Comment = ({ socket, blogId }: CommentProps) => {
       />
       <button
         onClick={handleComment}
-        className="px-4 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900"
+        disabled={!comment.trim() || !socket || !blogId}
+        className="px-4 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900 disabled:bg-gray-500"
       >
         Send
       </button>
