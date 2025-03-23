@@ -32,15 +32,15 @@ export const PostBlog = () => {
         const formData = new FormData();
         formData.append("image", imageData.file);
         const imgRes = await axios.post<{ imageLink: string }>(
-          "http://localhost:3000/blog/upload",
+          "https://writely-backend-2fw2.onrender.com/blog/upload",
           formData
         );
-        imageUrl = `http://localhost:3000${imgRes.data.imageLink}`;
+        imageUrl = `https://writely-backend-2fw2.onrender.com${imgRes.data.imageLink}`;
       }
       const generatedTag = await generateTag();
       setTag(generatedTag);
       const response = await axios.post(
-        "http://localhost:3000/blog/createBlogs",
+        "https://writely-backend-2fw2.onrender.com/blog/createBlogs",
         {
           title,
           blog,
