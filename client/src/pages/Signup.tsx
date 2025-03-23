@@ -12,16 +12,17 @@ const SignupPage: React.FC = () => {
     e.preventDefault();
     try {
       await axios.post("https://writely-backend-2fw2.onrender.com/signup", { username, email, password });
+      console.log("Signup successful!");
       navigate("/signin");
-    } catch (error) {
-      console.error("Signup failed", error);
+    } catch (error: any) {
+      console.error("Signup failed:", error.response?.data || error.message);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-yellow-100 p-4">
       <div className="w-[400px] max-w-md bg-yellow-50 rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-6">Sign Up</h1>
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Sign Up</h1>
         <form onSubmit={handleSignup} className="space-y-4">
           <input
             type="text"
