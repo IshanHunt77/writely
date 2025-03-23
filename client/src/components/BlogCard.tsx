@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { usernameatom } from "../atoms/usernameatom";
-import { Card, IconButton } from "@mui/material";
+import { Card } from "./ui/card";
+import { IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ShareIcon from "@mui/icons-material/Share";
@@ -13,6 +14,7 @@ interface BlogProps {
   title: string;
   author: string;
   content: string;
+  profilePhoto: string;
   imagelink: string;
   upvote: number;
 }
@@ -29,31 +31,36 @@ export const BlogCard: React.FC<BlogProps> = ({
   title,
   author,
   content,
+  profilePhoto,
   imagelink,
   upvote,
 }) => {
+  const user = useRecoilValue(usernameatom);
   const [authorname, setAuthor] = useState<string>("");
   const [profilePhotolink, setProfilePhoto] = useState<string>("");
   const [like, setLike] = useState<number>(upvote);
   const [blike, setBlike] = useState<boolean>(false);
   const navigate = useNavigate();
   const words = content.split(" ");
-  const excerpt = words.length > 30 ? words.slice(0, 30).join(" ") + "..." : content;
+  const excerpt =
+    words.length > 30 ? words.slice(0, 30).join(" ") + "..." : content;
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const res = await axios.get<Response>(
-          `https://writely-backend-2fw2.onrender.com/profile/${author}`,
-          { withCredentials: true }
-        );
-        setAuthor(res.data.userinfo.username);
-        setProfilePhoto(res.data.userinfo.profilePhoto);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-    fetchUserInfo();
+    if (author) {
+      const fetchUserInfo = async () => {
+        try {
+          const res = await axios.get<Response>(
+            `https://writely-backend-2fw2.onrender.com/profile/${author}`,
+            { withCredentials: true }
+          );
+          setAuthor(res.data.userinfo.username);
+          setProfilePhoto(res.data.userinfo.profilePhoto);
+        } catch (error) {
+          console.error("Error fetching user details:", error);
+        }
+      };
+      fetchUserInfo();
+    }
   }, [author]);
 
   const handleUpvote = async (e: React.MouseEvent) => {
@@ -92,7 +99,7 @@ export const BlogCard: React.FC<BlogProps> = ({
 
   return (
     <div
-      onClick={() => blogId && navigate(`/blog/${blogId}`)}
+      onClick={() => navigate(`/blog/${blogId}`)}
       className="cursor-pointer"
     >
       <Card className="w-80 h-96 flex flex-col justify-between bg-white overflow-hidden">
@@ -101,11 +108,13 @@ export const BlogCard: React.FC<BlogProps> = ({
           <div className="grid grid-cols-4 gap-4 w-full mt-2">
             <img
               className="rounded-full w-12 h-12 ml-2 border-2 border-green-500"
-              src={profilePhotolink || "/EmptyImage.png"}
+              src={profilePhotolink || profilePhoto || "/EmptyImage.png"}
               alt="profilePhoto"
             />
             <div className="flex flex-col col-span-3">
-              <p className="text-sm font-bold">r/{authorname}</p>
+              <p className="text-sm font-bold">
+                r/{authorname || user || "Anonymous"}
+              </p>
               <h1 className="font-bold">{title}</h1>
             </div>
           </div>
