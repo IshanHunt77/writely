@@ -1,9 +1,9 @@
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { imageatom } from "../atoms/imageatom";
 import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 
 export const ChooseFile = () => {
-  const [imageData, setImageData] = useRecoilState(imageatom);
+  const setImageData = useSetRecoilState(imageatom);
 
   return (
     <div>
@@ -15,11 +15,10 @@ export const ChooseFile = () => {
         onChange={(e) => {
           const selectedFile = e.target.files?.[0];
           if (selectedFile) {
-            const imageUrl = URL.createObjectURL(selectedFile);
-            setImageData({ file: selectedFile, imageUrl });
-
-            // Cleanup URL object to prevent memory leaks
-            return () => URL.revokeObjectURL(imageUrl);
+            setImageData({
+              file: selectedFile,
+              imageUrl: URL.createObjectURL(selectedFile),
+            });
           }
         }}
       />
