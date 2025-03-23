@@ -34,12 +34,12 @@ export const BlogPage = () => {
 
     const fetchData = async () => {
       try {
-        const blogRes = await axios.get(`http://localhost:3000/blog/${blogId}`, {
+        const blogRes = await axios.get(`https://writely-backend-2fw2.onrender.com/blog/${blogId}`, {
           withCredentials: true,
         });
         setBlog(blogRes.data);
 
-        const commentsRes = await axios.get<CommentType[]>(`http://localhost:3000/blog/comments/${blogId}`, {
+        const commentsRes = await axios.get<CommentType[]>(`https://writely-backend-2fw2.onrender.com/blog/comments/${blogId}`, {
           withCredentials: true,
         });
         setComments(commentsRes.data);
@@ -52,7 +52,7 @@ export const BlogPage = () => {
   }, [blogId]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
+    const newSocket = io("https://writely-backend-2fw2.onrender.com");
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
@@ -71,7 +71,7 @@ export const BlogPage = () => {
   const handleSearch = async () => {
     try {
       const searchRes = await axios.post(
-        "http://localhost:3000/blog/search",
+        "https://writely-backend-2fw2.onrender.com/blog/search",
         { search },
         { withCredentials: true }
       );
