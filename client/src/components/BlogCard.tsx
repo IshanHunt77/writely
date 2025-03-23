@@ -48,7 +48,7 @@ export const BlogCard: React.FC<BlogProps> = ({
   
     const fetchUserInfo = async () => {
       try {
-        const res = await axios.get<Response>(`http://localhost:3000/profile/${author}`, {
+        const res = await axios.get<Response>(`https://writely-backend-2fw2.onrender.com/profile/${author}`, {
           withCredentials: true,
         });
          setAuthor(res.data.userinfo.username);
@@ -63,7 +63,7 @@ export const BlogCard: React.FC<BlogProps> = ({
   const handleUpvote = async () => {
     try {
       if (!blike) {
-        await axios.post(`http://localhost:3000/blog/b/${blogId}`, { upvote: true }, { withCredentials: true });
+        await axios.post(`https://writely-backend-2fw2.onrender.com/blog/b/${blogId}`, { upvote: true }, { withCredentials: true });
         setLike((prev) => prev + 1);
         setBlike(true);
       }
@@ -75,7 +75,7 @@ export const BlogCard: React.FC<BlogProps> = ({
   const handleDownvote = async () => {
     try {
       if (!blike) {
-        await axios.post(`http://localhost:3000/blog/b/${blogId}`, { downvote: true }, { withCredentials: true });
+        await axios.post(`https://writely-backend-2fw2.onrender.com/blog/b/${blogId}`, { downvote: true }, { withCredentials: true });
         setLike((prev) => prev - 1);
         setBlike(true);
       }
