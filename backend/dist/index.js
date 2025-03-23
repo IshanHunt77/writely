@@ -23,7 +23,7 @@ const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const AddComments_1 = require("./controllers/AddComments");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());

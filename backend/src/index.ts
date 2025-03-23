@@ -12,7 +12,7 @@ import { Secret } from "./config";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app: Application = express();
 
 app.use(express.json());
