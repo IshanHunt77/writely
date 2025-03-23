@@ -1,33 +1,22 @@
 import { useState } from "react";
-import AcUnitIcon from "@mui/icons-material/AcUnit";
 import { ChooseFile } from "./ChooseFile";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { imageatom } from "../atoms/imageatom";
 import { usernameatom } from "../atoms/usernameatom";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useNavigate } from "react-router-dom";
 
 export const PostBlog = () => {
   const [blog, setBlog] = useState("");
   const [title, setTitle] = useState("");
-  const [tag, setTag] = useState("");
   const imageData = useRecoilValue(imageatom);
   const username = useRecoilValue(usernameatom);
   const nav = useNavigate();
 
-  const generateTag = async (): Promise<string> => {
-    const genAI = new GoogleGenerativeAI("AIzaSyBKXpAxfxI-_880RbuBXD4cmB3eTdoh3LQ");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const prompt = `Provide a single-word hashtag summarizing the essence of this blog: ${blog}`;
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  };
-
   const handleBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      let imageUrl = "";
+      let imageUrl = imageData.imageUrl || "";
       if (imageData.file) {
         const formData = new FormData();
         formData.append("image", imageData.file);
@@ -37,20 +26,19 @@ export const PostBlog = () => {
         );
         imageUrl = `https://writely-backend-2fw2.onrender.com${imgRes.data.imageLink}`;
       }
-      const generatedTag = await generateTag();
-      setTag(generatedTag);
+
       const response = await axios.post(
         "https://writely-backend-2fw2.onrender.com/blog/createBlogs",
         {
           title,
           blog,
-          imagelink: imageUrl || imageData.imageUrl,
-          tags: generatedTag,
+          imagelink: imageUrl,
         },
         { withCredentials: true }
       );
+
       console.log("Blog created:", response.data);
-      nav(`/${username}/blogs`);
+      nav(username ? `/${username}/blogs` : "/");
     } catch (error) {
       console.error("Error creating blog:", error);
     }
@@ -86,13 +74,6 @@ export const PostBlog = () => {
             className="w-full h-48 p-4 border border-amber-700 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 resize-none"
           />
           <div className="flex items-center justify-end gap-4">
-            <button
-              type="button"
-              title="Submarise"
-              className="flex items-center text-4xl text-gray-600"
-            >
-              <AcUnitIcon />
-            </button>
             <div title="Image">
               <ChooseFile />
             </div>
