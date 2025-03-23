@@ -28,7 +28,7 @@ export const RelatedCard = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await axios.get<Blog[]>("http://localhost:3000/blog/userblogs", { withCredentials: true });
+        const res = await axios.get<Blog[]>("https://writely-backend-2fw2.onrender.com/blog/userblogs", { withCredentials: true });
         setBlogs(res.data);
         const initialLikes: { [id: string]: number } = {};
         res.data.forEach((b) => {
@@ -45,7 +45,7 @@ export const RelatedCard = () => {
   const handleUpvote = async (id: string, currentUpvote: number) => {
     try {
       if (!voted[id]) {
-        await axios.post(`http://localhost:3000/blog/b/${id}`, { upvote: true }, { withCredentials: true });
+        await axios.post(`https://writely-backend-2fw2.onrender.com/blog/b/${id}`, { upvote: true }, { withCredentials: true });
         setLikeCounts((prev) => ({ ...prev, [id]: currentUpvote + 1 }));
         setVoted((prev) => ({ ...prev, [id]: true }));
       }
@@ -57,7 +57,7 @@ export const RelatedCard = () => {
   const handleDownvote = async (id: string, currentUpvote: number) => {
     try {
       if (!voted[id]) {
-        await axios.post(`http://localhost:3000/blog/b/${id}`, { downvote: true }, { withCredentials: true });
+        await axios.post(`https://writely-backend-2fw2.onrender.com/blog/b/${id}`, { downvote: true }, { withCredentials: true });
         setLikeCounts((prev) => ({ ...prev, [id]: currentUpvote - 1 }));
         setVoted((prev) => ({ ...prev, [id]: true }));
       }
