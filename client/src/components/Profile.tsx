@@ -22,7 +22,7 @@ export const Profile = () => {
     const fetchProfileData = async () => {
       try {
         const userInfo = await axios.get<ProfileResponse>(
-          "http://localhost:3000/profile/user",
+          "https://writely-backend-2fw2.onrender.com/profile/user",
           { withCredentials: true }
         );
         setProfileImagelink(userInfo.data.userinfo?.profilePhoto || null);
@@ -41,13 +41,13 @@ export const Profile = () => {
         const formData = new FormData();
         formData.append("images", dp.file);
         const imgRes = await axios.post<{ imageLink: string }>(
-          "http://localhost:3000/profile/upload",
+          "https://writely-backend-2fw2.onrender.com/profile/upload",
           formData
         );
-        imageUrl = `http://localhost:3000${imgRes.data.imageLink}`;
+        imageUrl = `https://writely-backend-2fw2.onrender.com${imgRes.data.imageLink}`;
       }
       const profileres = await axios.post(
-        "http://localhost:3000/profile/updateprofile",
+        "https://writely-backend-2fw2.onrender.com/profile/updateprofile",
         { profilePhoto: imageUrl },
         { withCredentials: true }
       );
