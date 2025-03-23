@@ -31,13 +31,14 @@ interface Response {
 export const Blog = ({ blog }: BlogProps) => {
   const user = useRecoilValue(usernameatom);
   const profile = useRecoilValue(dpatom);
-  const [like, setLike] = useState(blog.upvote);
+  const [like, setLike] = useState<number>(blog.upvote);
   const [blike, setBlike] = useState<boolean>(false);
   const [authorname, setAuthor] = useState<string>("");
   const [profilePhotolink, setProfilePhoto] = useState<string>("");
   const navigate = useNavigate();
   const words = blog.blog.split(" ");
-  const excerpt = words.length > 10 ? words.slice(0, 10).join(" ") + "..." : blog.blog;
+  const excerpt =
+    words.length > 30 ? words.slice(0, 30).join(" ") + "..." : blog.blog;
 
   useEffect(() => {
     if (blog.author) {
@@ -123,7 +124,10 @@ export const Blog = ({ blog }: BlogProps) => {
             >
               <ThumbDownIcon sx={{ color: "#5d4037", fontSize: 28 }} />
             </button>
-            <button onClick={(e) => e.stopPropagation()} className="flex items-center">
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center"
+            >
               <ShareIcon sx={{ color: "#5d4037", fontSize: 28 }} />
             </button>
           </div>
