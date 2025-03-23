@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BlogCard } from "../components/BlogCard";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { dpatom } from "../atoms/dpatom";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -18,8 +18,8 @@ interface Blog {
 export const AllBlogs = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [search, setSearch] = useState("");
-  const dp = useRecoilValue(dpatom);
-  const nav = useNavigate();
+  const [dp, setDP] = useRecoilState(dpatom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,20 +29,27 @@ export const AllBlogs = () => {
           { withCredentials: true }
         );
         setBlogs(blogResponse.data);
+
+        const profileRes = await axios.get<{ profilePhoto: string }>(
+          "https://writely-backend-2fw2.onrender.com/profile/profilephoto",
+          { withCredentials: true }
+        );
+        setDP({ file: null, imageUrl: profileRes.data.profilePhoto });
       } catch (e) {
-        console.log("Error occurred:", e);
+        console.error("Error occurred:", e);
       }
     };
     fetchData();
-  }, []);
+  }, [setDP]);
 
   const getSearch = async () => {
     try {
-      const searchRes = await axios.get<Blog[]>(
-        `https://writely-backend-2fw2.onrender.com/blog/search?search=${encodeURIComponent(search)}`,
+      const searchRes = await axios.post<Blog[]>(
+        "https://writely-backend-2fw2.onrender.com/blog/search",
+        { search },
         { withCredentials: true }
       );
-      nav("/blogs/result", { state: { blogs: searchRes.data } });
+      navigate("/blogs/result", { state: { blogs: searchRes.data } });
     } catch (error) {
       console.error("Error during search:", error);
     }
@@ -54,11 +61,11 @@ export const AllBlogs = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white-100">
+    <div className="min-h-screen bg-white">
       <div className="px-4 py-6">
         <div className="flex items-center justify-between mb-8">
           <button
-            onClick={() => nav("/createblog")}
+            onClick={() => navigate("/createblog")}
             className="px-6 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900"
           >
             Create Blog
@@ -68,12 +75,14 @@ export const AllBlogs = () => {
               type="text"
               placeholder="Search..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-96 p-2 border border-amber-500 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearch(e.target.value)
+              }
+              className="w-96 p-2 border border-amber-500 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 mr-2"
             />
             <button
               onClick={getSearch}
-              className="ml-2 px-4 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900"
+              className="px-4 py-2 bg-amber-800 text-white rounded-md hover:bg-amber-900"
             >
               Search
             </button>
@@ -85,8 +94,8 @@ export const AllBlogs = () => {
             <BlogCard
               key={bl._id}
               blogId={bl._id}
-              title={bl.title}
               author={bl.author}
+              title={bl.title}
               content={bl.blog}
               imagelink={bl.imagelink}
               profilePhoto={dp.imageUrl || ""}
