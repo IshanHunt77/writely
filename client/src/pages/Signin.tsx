@@ -5,10 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 
 const SignInCard: React.FC = () => {
-  const [username, setUsername] = useState<string | null>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const nav = useNavigate();
   const [name, setName] = useRecoilState(usernameatom);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,9 +18,10 @@ const SignInCard: React.FC = () => {
         { username, password },
         { withCredentials: true }
       );
-      console.log("Signin successful", response);
-      setName({ username });
-      nav(`/${username}/allblogs`);
+      console.log("Signin successful:", response.data);
+      
+      setName(username); // Fix: Removed unnecessary object wrapping
+      navigate(`/${username}/allblogs`);
     } catch (error: any) {
       console.error("Signin error:", error.response?.data || error.message);
     }
@@ -35,7 +35,7 @@ const SignInCard: React.FC = () => {
           <input
             type="text"
             placeholder="Username"
-            value={username ?? ""}
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full p-3 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700"
             required
