@@ -4,44 +4,40 @@ import { Blog } from "../components/Blog";
 import { Comment } from "../components/Comment";
 import Navbar from "../components/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import { RelatedCard } from "../components/RelatedBlogCard";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import { Card } from "@mui/material";
 
 interface CommentType {
-    _id: string;
-    blogId: string;
-    username: string;
-    comment: string;
-    createdAt: string;
-  }
-  
+  _id: string;
+  blogId: string;
+  username: string;
+  comment: string;
+  createdAt: string;
+}
 
 export const BlogPage = () => {
   const nav = useNavigate();
   const { blogId } = useParams();
-  const [like, setLike] = useState(0);
-  console.log(blogId)
   const [search, setSearch] = useState("");
   const [blog, setBlog] = useState<any>(null);
-  const [comments, setComments] = useState<any[]>([]);
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const [comments, setComments] = useState<CommentType[]>([]);
+  const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
     if (!blogId) return;
 
     const fetchData = async () => {
       try {
-        const blogRes = await axios.get(`https://writely-backend-2fw2.onrender.com/blog/${blogId}`, {
-          withCredentials: true,
-        });
+        const blogRes = await axios.get(
+          `https://writely-backend-2fw2.onrender.com/blog/${blogId}`,
+          { withCredentials: true }
+        );
         setBlog(blogRes.data);
 
-        const commentsRes = await axios.get<CommentType[]>(`https://writely-backend-2fw2.onrender.com/blog/comments/${blogId}`, {
-          withCredentials: true,
-        });
+        const commentsRes = await axios.get<CommentType[]>(
+          `https://writely-backend-2fw2.onrender.com/blog/comments/${blogId}`,
+          { withCredentials: true }
+        );
         setComments(commentsRes.data);
       } catch (error) {
         console.error("Error fetching blog or comments:", error);
@@ -59,7 +55,7 @@ export const BlogPage = () => {
       console.log("WebSocket connected", newSocket.id);
     });
 
-    newSocket.on("comment-added", (newComment) => {
+    newSocket.on("comment-added", (newComment: CommentType) => {
       setComments((prevComments) => [...prevComments, newComment]);
     });
 
@@ -69,6 +65,7 @@ export const BlogPage = () => {
   }, []);
 
   const handleSearch = async () => {
+    if (!search.trim()) return; // Prevent empty search requests
     try {
       const searchRes = await axios.post(
         "https://writely-backend-2fw2.onrender.com/blog/search",
@@ -83,7 +80,7 @@ export const BlogPage = () => {
 
   return (
     <div className="min-h-screen bg-white-100">
-      <div className=" px-4 py-6">
+      <div className="px-4 py-6">
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => nav("/createblog")}
@@ -105,54 +102,42 @@ export const BlogPage = () => {
             >
               Search
             </button>
-           
           </div>
           <Navbar />
         </div>
 
-        
         <div className="bg-white-100 shadow-lg rounded-lg p-8 mb-8">
-  {blog ? (
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <Blog blog={blog} />
-      </div>
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Recommended</h2>
-        <RelatedCard />
-      </div>
-    </div>
-  ) : (
-    <div className="text-center text-gray-500">Loading blog...</div>
-  )}
-</div>
+          {blog ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Blog blog={blog} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Recommended</h2>
+                <RelatedCard />
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">Loading blog...</div>
+          )}
+        </div>
 
-
-       
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-4">Comments</h2>
-          <Comment socket={socket} blogId={blogId} />
+          <Comment socket={socket} blogId={blogId!} />
 
           <div className="mt-4">
             {comments.length > 0 ? (
               comments.map((comment, index) => (
                 <div key={index} className="border-b border-gray-200 py-2">
-                  <Card key={index} className="p-4 shadow-md rounded-lg">
-                  <div className="flex flex-col">
-                  <p className="font-bold text-gray-800">{comment.author || "ishan77"}</p>
-
-                    <p className="text-gray-800">{comment.comment}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      
-                        <ThumbUpIcon sx={{ color: "#5d4037" }} />
-                      
-                      
-                        <ThumbDownIcon sx={{ color: "#5d4037" }} />
-                      
+                  <div className="p-4 shadow-md rounded-lg bg-gray-100">
+                    <div className="flex flex-col">
+                      <p className="font-bold text-gray-800">
+                        {comment.username || "Anonymous"}
+                      </p>
+                      <p className="text-gray-800">{comment.comment}</p>
                     </div>
                   </div>
-                </Card>
-                  
                 </div>
               ))
             ) : (
